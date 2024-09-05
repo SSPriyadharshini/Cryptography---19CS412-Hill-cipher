@@ -16,55 +16,103 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
-#include<stdio.h>
-#include<conio.h>
-#include<string.h>
-int main()
-{
-    unsigned int a[3][3]={{6,24,1},{13,16,10},{20,17,15}};
-    unsigned int b[3][3]={{8,5,10},{21,8,21},{21,12,8}};
-    int i,j, t=0;
-    unsigned int c[20],d[20];
-    char msg[20];
-    printf("Enter plain text: ");
-    scanf("%s",msg);
-    for(i=0;i<strlen(msg);i++)
-    {
-        c[i]=msg[i]-65;
-        unsigned int a[3][3]={{6,24,1},{13,16,10},{20,17,15}};
-        unsigned int b[3][3]={{8,5,10},{21,8,21},{21,12,8}};
-        printf("%d ",c[i]);
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int keymat[3][3] = { { 1, 2, 1 }, { 2, 3, 2 }, { 2, 2, 1 } };
+int invkeymat[3][3] = { { -1, 0, 1 }, { 2, -1, 0 }, { -2, 2, -1 } };
+char key[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+// Function to encode a triplet of characters
+void encode(char a, char b, char c, char ret[]) {
+    int x, y, z;
+    int posa = (int)a - 65;
+    int posb = (int)b - 65;
+    int posc = (int)c - 65;
+
+    x = posa * keymat[0][0] + posb * keymat[1][0] + posc * keymat[2][0];
+    y = posa * keymat[0][1] + posb * keymat[1][1] + posc * keymat[2][1];
+    z = posa * keymat[0][2] + posb * keymat[1][2] + posc * keymat[2][2];
+
+    ret[0] = key[x % 26];
+    ret[1] = key[y % 26];
+    ret[2] = key[z % 26];
+    ret[3] = '\0';
+}
+
+// Function to decode a triplet of characters
+void decode(char a, char b, char c, char ret[]) {
+    int x, y, z;
+    int posa = (int)a - 65;
+    int posb = (int)b - 65;
+    int posc = (int)c - 65;
+
+    x = posa * invkeymat[0][0] + posb * invkeymat[1][0] + posc * invkeymat[2][0];
+    y = posa * invkeymat[0][1] + posb * invkeymat[1][1] + posc * invkeymat[2][1];
+    z = posa * invkeymat[0][2] + posb * invkeymat[1][2] + posc * invkeymat[2][2];
+
+    ret[0] = key[(x % 26 < 0) ? (26 + x % 26) : (x % 26)];
+    ret[1] = key[(y % 26 < 0) ? (26 + y % 26) : (y % 26)];
+    ret[2] = key[(z % 26 < 0) ? (26 + z % 26) : (z % 26)];
+    ret[3] = '\0';
+}
+
+int main() {
+    char msg[1000];
+    char enc[1000] = "";
+    char dec[1000] = "";
+    int n;
+
+    strcpy(msg, "PREETHI");
+    printf("Input message : %s\n", msg);
+
+    // Convert the input message to uppercase
+    for (int i = 0; i < strlen(msg); i++) {
+        msg[i] = toupper(msg[i]);
     }
-    for(i=0;i<3;i++)
-    {
-        t=0;
-        for(j=0;j<3;j++)
-        {
-             t=t+(a[i][j]*c[j]);
+
+    // Remove spaces
+    n = strlen(msg) % 3;
+
+    // Append padding text 'X' if necessary
+    if (n != 0) {
+        for (int i = 1; i <= (3 - n); i++) {
+            strcat(msg, "X");
         }
-        d[i]=t%26;
     }
-    printf("\nEncrypted Cipher Text :");
-    for(i=0;i<3;i++)
-    printf(" %c",d[i]+65);
-    for(i=0;i<3;i++)
-    {
-         t=0;
-         for(j=0;j<3;j++)
-    {
-t=t+(b[i][j]*d[j]);
+
+    printf("Padded message : %s\n", msg);
+
+    // Encode the message
+    for (int i = 0; i < strlen(msg); i += 3) {
+        char a = msg[i];
+        char b = msg[i + 1];
+        char c = msg[i + 2];
+        char encoded[4];
+        encode(a, b, c, encoded);
+        strcat(enc, encoded);
+    }
+
+    printf("Encoded message : %s\n", enc);
+
+    // Decode the message
+    for (int i = 0; i < strlen(enc); i += 3) {
+        char a = enc[i];
+        char b = enc[i + 1];
+        char c = enc[i + 2];
+        char decoded[4];
+        decode(a, b, c, decoded);
+        strcat(dec, decoded);
+    }
+
+    printf("Decoded message : %s\n", dec);
+    return 0;
 }
-c[i]=t%26;
-}
-printf("\nDecrypted Cipher Text :");
-for(i=0;i<3;i++)
-printf(" %c",c[i]+65);
-getch();
-return 0;
-}
+
 ```
 ## OUTPUT:
-![image](https://github.com/user-attachments/assets/9214592c-887e-498f-974e-7f88f7e8938c)
+![image](https://github.com/user-attachments/assets/c291a4d9-d471-4673-9325-f2c9a6fd8306)
 
 
 ## RESULT:
